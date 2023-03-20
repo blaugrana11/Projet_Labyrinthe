@@ -5,8 +5,8 @@ host, port = ('localhost', 4000)
 try :
     s.connect((host, port))
     print("Le client se connecte... ")
-
-    data = ' J peux moi aussi ouuuu que les petits ? T as les kramptés ? Hein ? Inpainyain, Quoicoubeh, quoicoubeh, quoicoubeh '
+    s.listen()
+    data = ' J peux moi aussi ouuuu que les petits ? T as les kramptés ? Hein ? Inpainyain, Quoicoubeh, quoicoubeh, quoicoubeh 🎶 '
     data = data.encode("utf8")
     s.sendall(data)
 except ConnectionRefusedError :
@@ -14,4 +14,5 @@ except ConnectionRefusedError :
 
 finally :
     s.close()
+
 
