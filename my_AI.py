@@ -15,11 +15,11 @@ request_ping = {
    "response": "pong"
 }
 
-request_coup = {
+'''request_coup = {
    "response": "move",
    "move": the_move_played,
    "message": "Fun message"
-}
+}'''
 
 surrender = {
    "response": "giveup",
@@ -42,7 +42,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind(('localhost', 8888))
     s.listen()
 
-    while Variable:
+    while True:
         s.settimeout(5)
             
         try: 
