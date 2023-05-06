@@ -2,7 +2,6 @@ import socket
 import json
 import time
 import sys
-from typing import Optional, List, Tuple
 
 server_address = ('localhost', 3000)
 Variable = True
@@ -13,8 +12,8 @@ port = int(sys.argv[1])
 request = {
     "request": "subscribe",
     "port": port,
-    "name": "Nabil ; {}".format(port),
-    "matricules": ["21168", "20130"]
+    "name": "joueur2 ; {}".format(port),
+    "matricules": ["21169", "90130"]
 }
 
 # Création de la socket et envoi de la requête de souscription au serveur
@@ -65,19 +64,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 elif "W" == True :
                         new_position = position - 1
                 client_socket.sendall(json.dumps(response).encode())'''
-            
-            
 
         except socket.timeout:
             pass
 print(type(message))
-
-position = 0
-if "N" == True :
-    new_position = position - 7
-elif "E" == True :
-    new_position = position + 1
-elif "S" == True :
-    new_position = position + 7
-elif "W" == True :
-    new_position = position - 1 #nbh
