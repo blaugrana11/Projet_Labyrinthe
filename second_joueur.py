@@ -42,22 +42,22 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             with client_socket:
                 def reponse() :
                     chiffre = random.randint(6,8)
-                    toile = dict(message['state']['tile'])
-                    toile['N']= message['state']['tile']['W']
-                    toile['E']= message['state']['tile']['N']
-                    toile['S']= message['state']['tile']['E']
-                    toile['W']= message['state']['tile']['S']
+                    freetile = dict(message['state']['tile'])
+                    freetile['N']= message['state']['tile']['W']
+                    freetile['E']= message['state']['tile']['N']
+                    freetile['S']= message['state']['tile']['E']
+                    freetile['W']= message['state']['tile']['S']
                     position_actuelle = message['state']['current']
                     #print(position_actuelle)
                     if message['state']['board'][int(position_actuelle)]['N'] == True :
-                        jouer = {"tile":toile, "gate":"B", "new_position":position_actuelle - 7}
+                        jouer = {"tile":freetile, "gate":"B", "new_position":position_actuelle - 7}
                     elif message['state']['board'][int(position_actuelle)]['E'] == True :
-                        jouer = {"tile":toile, "gate":"B", "new_position":position_actuelle +1}
+                        jouer = {"tile":freetile, "gate":"B", "new_position":position_actuelle +1}
                     elif message['state']['board'][int(position_actuelle)]['S'] == True :
-                        jouer = {"tile":toile, "gate":"B", "new_position":position_actuelle + 7}
+                        jouer = {"tile":freetile, "gate":"B", "new_position":position_actuelle + 7}
                     elif message['state']['board'][int(position_actuelle)]['W'] == True :
-                        jouer = {"tile":toile, "gate":"B", "new_position":position_actuelle - 1}
-                    aenvoyer = {"response":"move", "move":jouer, "message":"kuku"}
+                        jouer = {"tile":freetile, "gate":"B", "new_position":position_actuelle - 1}
+                    aenvoyer = {"response":"move", "move":jouer, "message":"joueur2 vient de jouer"}
                     client_socket.sendall(json.dumps(aenvoyer).encode())
 
 
@@ -75,6 +75,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     client_socket.sendall(json.dumps(response).encode())
                 elif message['request'] == 'play':
                     reponse()
+                
+                #print(message['state'])
 
         except socket.timeout:
             pass

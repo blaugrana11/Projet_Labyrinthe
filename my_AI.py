@@ -13,7 +13,7 @@ port = int(sys.argv[1])
 request = {
     "request": "subscribe",
     "port": port,
-    "name": "Nabil ; {}".format(port),
+    "name": "Nabil".format(port),
     "matricules": ["21168", "20130"]
 }
 
@@ -53,21 +53,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     response = {"response": "pong"}
                     print(response)
                     client_socket.sendall(json.dumps(response).encode())
-            
-            '''while True :
-                position = 0
-                if "N" == True :
-                    new_position = position - 7
-                elif "E" == True :
-                    new_position = position + 1
-                elif "S" == True :
-                        new_position = position + 7
-                elif "W" == True :
-                        new_position = position - 1
-                client_socket.sendall(json.dumps(response).encode())'''
-            
-            
-
         except socket.timeout:
             pass
 print(type(message))
