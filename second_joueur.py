@@ -41,8 +41,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             client_socket, client_address = s.accept()
             with client_socket:
                 def reponse() :
-                    chiffre = random.randint(6,8)
+                    #chiffre = random.randint(6,8)
                     freetile = dict(message['state']['tile'])
+                    print(freetile)
                     freetile['N']= message['state']['tile']['W']
                     freetile['E']= message['state']['tile']['N']
                     freetile['S']= message['state']['tile']['E']
