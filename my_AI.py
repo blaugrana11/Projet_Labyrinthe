@@ -4,41 +4,41 @@ import time
 import sys
 from typing import Optional, List, Tuple
 
-server_address = ('localhost', 3000)
-Variable = True
+server_address = ('', 3000)
+Playing = True
 
 port = int(sys.argv[1])
 
-# Création de la requête de souscription
+# Création de la requête d'inscription
 request = {
     "request": "subscribe",
     "port": port,
-    "name": "Bilal et Mohamed",
-    "matricules": ["17230", "17632"]
+    "name": "Nabil et Mohamed",
+    "matricules": ["21168", "20130"]
 }
 
-# Création de la socket et envoi de la requête de souscription au serveur
+# Établissement de la connexion en créant la socket et en envoyant la requête d'inscription' au serveur".
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.settimeout(5)
     try:
         s.connect(server_address)
         s.sendall(json.dumps(request).encode())
-        response = s.recv(1024).decode()
+        response = s.recv(2048).decode()
         print(response)
     except socket.timeout:
-        print("Le temps d'attente pour la connexion est trop long !")
+        print("Connexion au serveur échouée")
         pass
 
-# Création de la socket et écoute sur le port de souscription
+# Création de la socket et écoute sur le port d'inscription
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind(('', port))
     s.listen()
 
-    while Variable:
+    while Playing:
         s.settimeout(5)
             
         try: 
-            # Acceptation de la connexion entrante
+            # Réception et acceptation de la connexion entrante
             client_socket, client_address = s.accept()
             with client_socket:
                 print('Connexion de', client_address)
@@ -47,7 +47,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 data = client_socket.recv(16000).decode()
                 print('Reçu', repr(data))
 
-                # Analyse du message reçu et envoi de la réponse appropriée
+                # Traitement du message et envoi de la réponse adéquate
                 message = json.loads(data)
                 if message['request'] == 'ping':
                     response = {"response": "pong"}
