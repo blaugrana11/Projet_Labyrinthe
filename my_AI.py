@@ -3,6 +3,8 @@ import json
 import time
 import sys
 from typing import Optional, List, Tuple
+from collections import deque
+
 
 server_address = ('', 3000)
 Playing = True
@@ -17,7 +19,50 @@ request = {
     "matricules": ["21168", "20130"]
 }
 
-# Établissement de la connexion en créant la socket et en envoyant la requête d'inscription' au serveur".
+
+def neighbors(state, maze):
+    x, y = state
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    result = []
+
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < len(maze) and 0 <= ny < len(maze[0]) and maze[nx][ny] != 1:  # 1 est supposé représenter un mur
+            result.append((nx, ny))
+
+    return result
+
+
+def bfs(state, goal):
+    frontier = deque()  # Une file d'attente pour les états à explorer
+    frontier.append(state)  # On commence par l'état initial
+    came_from = {}  # Un dictionnaire qui associe à chaque état l'état précédent
+    came_from[state] = None  # L'état initial n'a pas d'état précédent
+
+    while len(frontier) > 0:  # Tant qu'il reste des états à explorer
+        current = frontier.popleft()  # On prend le premier état de la file d'attente
+
+        # Si l'état courant est l'état final, on a terminé
+        if current == goal:
+            break
+
+        # Sinon, pour chaque voisin de l'état courant
+        for next in neighbors(current):
+            # Si on n'a pas encore exploré ce voisin
+            if next not in came_from:
+                frontier.append(next)  # On l'ajoute à la file d'attente pour l'explorer plus tard
+                came_from[next] = current  # On note qu'on peut atteindre ce voisin à partir de l'état courant
+
+    # Une fois que l'on a atteint l'état final, on peut retrouver le chemin qui y mène en remontant les états précédents
+    current = goal
+    path = []
+    while current is not None:
+        path.append(current)
+        current = came_from[current]
+    path.reverse()  # On inverse le chemin pour qu'il commence par l'état initial
+    return path  # Et on le renvoie
+
+# Établissement de la connexion en créant la socket et en envoyant la requête d'inscription au serveur".
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.settimeout(5)
     try:
@@ -53,5 +98,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     response = {"response": "pong"}
                     print(response)
                     client_socket.sendall(json.dumps(response).encode())
+
+                
+
         except socket.timeout:
             pass
