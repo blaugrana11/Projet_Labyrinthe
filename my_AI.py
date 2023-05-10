@@ -99,6 +99,33 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     print(response)
                     client_socket.sendall(json.dumps(response).encode())
 
+                elif message['request'] == 'play':
+                    maze = message["state"]['board']  # Le labyrinthe est supposé être envoyé dans chaque message 'play'
+                    ind_player = message["state"]["current"]
+                    player_position = message['state']["positions"][ind_player]  # La position du joueur
+                    print(player_position)
+                    goal_position = message["state"]['target']  # La position du but
+
+                    path = bfs(player_position, goal_position, maze)  # On trouve un chemin vers le but
+
+                    if path:
+                        next_position = path[1]  # On prend le deuxième élément du chemin, car le premier est la position actuelle du joueur
+                        dx, dy = next_position[0] - player_position[0], next_position[1] - player_position[1]
+
+                        # On déduit la direction à partir de la différence de positions
+                        if dx == 0 and dy == 1:
+                            direction = "right"
+                        elif dx == 0 and dy == -1:
+                            direction = "left"
+                        elif dx == 1 and dy == 0:
+                            direction = "down"
+                        elif dx == -1 and dy == 0:
+                            direction = "up"
+
+                        response = {"response": direction}
+                    client_socket.sendall(json.dumps(response).encode())
+
+
                 
 
         except socket.timeout:
