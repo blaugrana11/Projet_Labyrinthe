@@ -19,7 +19,7 @@ def play() :  #Fonction basique qui renvoie une nouvelle position la ou c est po
     a=pos+down
     b=pos+up
     c=pos+right
-    d=pos+left
+    d=pos+left 
     for key, value in message['state']['board'][pos].items() :
         
         if value == True:
