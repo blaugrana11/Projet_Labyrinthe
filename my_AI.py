@@ -4,7 +4,7 @@ import sys
 
 Playing = True
 
-def play() :
+def play() :  #Fonction basique qui renvoie une nouvelle position la ou c est possible de maniere aleatoire
     ind_player = message['state']['current']
     pos = message['state']['positions'][ind_player]
     print(pos)
@@ -30,9 +30,6 @@ def play() :
    "message": "Yo !"
     }
     client_socket.sendall(json.dumps(client_resp).encode())
-
-    #if message['state']['board'][pos]['S']== True :
-
 
 
 # Configuration
@@ -87,7 +84,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 elif message['request'] == 'play':
                     play()
                 
-                #print(message['state'])
 
         except socket.timeout:
             pass
