@@ -3,6 +3,17 @@ import json
 import sys
 
 Playing = True
+
+def play() :
+    ind_pos = message['state']['current']
+    pos = message['state']['positions'][ind_pos]
+    print(pos)
+    right = 1
+    left = -1
+    up = -7
+    down = 7
+    
+
 # Configuration
 HOST = "localhost"
 PORT = int(sys.argv[1])
