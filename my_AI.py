@@ -1,6 +1,7 @@
 import socket
 import json
 import sys
+import random
 
 Playing = True
 
@@ -11,25 +12,36 @@ def play() :  #Fonction basique qui renvoie une nouvelle position la ou c est po
     right = 1
     left = -1
     up = -7
-    down = 7
+    down = 7 
+    gates = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
+    tile = message['state']['board']
+    new_pos=0
     for key, value in message['state']['board'][pos].items() :
-        if value == True :
-            if key == 'S':
+        if value == True:
+            if key == 'S' and tile[pos+down]['N']== True and pos not in [42, 43, 44, 45, 46, 47, 48]:
                 new_pos = pos + down
-            elif key == 'N':
+                
+            elif key == 'N'  and tile[pos+up]['S']== True and pos not in [0, 1, 2, 3, 4, 5, 6]:
                 new_pos = pos+up
-            elif key == 'E':
+                
+            elif key == 'E'  and tile[pos+right]['W']== True and pos not in [6, 13, 20, 27, 34, 41, 48]:
                 new_pos = pos + right
-            elif key == 'W':
+                
+            elif key == 'W'  and tile[pos+left]['E']== True and pos not in [0, 7, 14, 21, 28, 35, 42]:
                 new_pos = pos + left
+                
+            else :
+                new_pos=pos
+        
     
-    move = {'tile' : message['state']['tile'], "gate": "B", "new_position": new_pos}
+    move = {'tile' : message['state']['tile'], "gate": random.choice(gates), "new_position": new_pos}
     client_resp = {
    "response": "move",
    "move": move,
    "message": "Yo !"
     }
-    client_socket.sendall(json.dumps(client_resp).encode())
+    print(move)
+    client_socket.sendall(json.dumps(client_resp).encode()) #Envoi de mon coup au serveur
 
 
 # Configuration
@@ -58,7 +70,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         print("Connexion au serveur échouée")
         pass
 
- 
+ # Création de la socket et écoute sur le port d'inscription
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind(('', PORT))
     s.listen()
