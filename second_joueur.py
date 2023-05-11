@@ -1,67 +1,86 @@
 import socket
 import json
-import time
 import sys
 import random
 
-server_address = ('localhost', 3000)
-Variable = True
+Playing = True
 
-port = int(sys.argv[1])
+def play() :  #Fonction basique qui renvoie une nouvelle position la ou c est possible de maniere aleatoire
+    ind_player = message['state']['current']
+    pos = message['state']['positions'][ind_player]
+    print(pos)
+    right = 1
+    left = -1
+    up = -7
+    down = 7 
+    gates = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
+    tile = message['state']['board']
+    new_pos=0
+    for key, value in message['state']['board'][pos].items() :
+        if value == True:
+            if key == 'S' and tile[0<=pos+down<=48]['N']== True and pos not in [42, 43, 44, 45, 46, 47, 48]:
+                new_pos = pos + down
+                
+            elif key == 'N'  and tile[0<=pos+up<=48]['S']== True and pos not in [0, 1, 2, 3, 4, 5, 6]:
+                new_pos = pos+up
+                
+            elif key == 'E'  and tile[0<=pos+right<=48]['W']== True and pos not in [6, 13, 20, 27, 34, 41, 48]:
+                new_pos = pos + right
+                
+            elif key == 'W'  and tile[0<=pos+left<=48]['E']== True and pos not in [0, 7, 14, 21, 28, 35, 42]:
+                new_pos = pos + left
+                
+            else :
+                new_pos=pos
+        
+    
+    move = {'tile' : message['state']['tile'], "gate": random.choice(gates), "new_position": new_pos}
+    client_resp = {
+   "response": "move",
+   "move": move,
+   "message": "Yo !"
+    }
+    print(move)
+    client_socket.sendall(json.dumps(client_resp).encode()) #Envoi de mon coup au serveur
 
-# Création de la requête de souscription
-request = {
-    "request": "subscribe",
-    "port": port,
-    "name": "player2".format(port),
-    "matricules": ["1001", "0101", str(port)]
-}
 
-# Création de la socket et envoi de la requête de souscription au serveur
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.settimeout(5)
+# Configuration
+HOST = "localhost"
+PORT = int(sys.argv[1])
+NAME = "joueur 2"
+MATRICULES = ["abcd", "efgh"]
+SERVER_ADRESS = ('',3000)
+
+# Inscription
+subscribe_msg = {
+        "request": "subscribe",
+        "port": PORT,
+        "name": NAME,
+        "matricules": MATRICULES
+    }
+ # Établissement de la connexion en créant la socket et en envoyant la requête d'inscription au serveur".
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+    server_socket.settimeout(5)
     try:
-        s.connect(server_address)
-        s.sendall(json.dumps(request).encode())
-        response = s.recv(1024).decode()
+        server_socket.connect(SERVER_ADRESS)
+        server_socket.sendall(json.dumps(subscribe_msg).encode())
+        response = json.loads(server_socket.recv(4096).decode())
         print(response)
     except socket.timeout:
-        print("Le temps d'attente pour la connexion est trop long !")
+        print("Connexion au serveur échouée")
         pass
 
-# Création de la socket et écoute sur le port de souscription
+ # Création de la socket et écoute sur le port d'inscription
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind(('', port))
+    s.bind(('', PORT))
     s.listen()
 
-    while Variable:
+    while Playing:
         s.settimeout(5)
         try: 
             # Acceptation de la connexion entrante
             client_socket, client_address = s.accept()
             with client_socket:
-                def reponse() :
-                    #chiffre = random.randint(6,8)
-                    freetile = dict(message['state']['tile'])
-                    print(freetile)
-                    freetile['N']= message['state']['tile']['W']
-                    freetile['E']= message['state']['tile']['N']
-                    freetile['S']= message['state']['tile']['E']
-                    freetile['W']= message['state']['tile']['S']
-                    position_actuelle = message['state']['current']
-                    #print(position_actuelle)
-                    if message['state']['board'][int(position_actuelle)]['N'] == True :
-                        jouer = {"tile":freetile, "gate":"B", "new_position":position_actuelle - 7}
-                    elif message['state']['board'][int(position_actuelle)]['E'] == True :
-                        jouer = {"tile":freetile, "gate":"B", "new_position":position_actuelle +1}
-                    elif message['state']['board'][int(position_actuelle)]['S'] == True :
-                        jouer = {"tile":freetile, "gate":"B", "new_position":position_actuelle + 7}
-                    elif message['state']['board'][int(position_actuelle)]['W'] == True :
-                        jouer = {"tile":freetile, "gate":"B", "new_position":position_actuelle - 1}
-                    aenvoyer = {"response":"move", "move":jouer, "message":"joueur2 vient de jouer"}
-                    client_socket.sendall(json.dumps(aenvoyer).encode())
-
-
                 print('Connexion de', client_address)
 
                 # Réception du message envoyé par le serveur
@@ -75,11 +94,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     print(response)
                     client_socket.sendall(json.dumps(response).encode())
                 elif message['request'] == 'play':
-                    reponse()
+                    play()
                 
-                #print(message['state'])
 
         except socket.timeout:
             pass
-
-        #Variable = False #Pour arrêter la boucle étant donné qu'on est déja accepté
