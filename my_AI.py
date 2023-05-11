@@ -5,14 +5,35 @@ import sys
 Playing = True
 
 def play() :
-    ind_pos = message['state']['current']
-    pos = message['state']['positions'][ind_pos]
+    ind_player = message['state']['current']
+    pos = message['state']['positions'][ind_player]
     print(pos)
     right = 1
     left = -1
     up = -7
     down = 7
+    for key, value in message['state']['board'][pos].items() :
+        if value == True :
+            if key == 'S':
+                new_pos = pos + down
+            elif key == 'N':
+                new_pos = pos+up
+            elif key == 'E':
+                new_pos = pos + right
+            elif key == 'W':
+                new_pos = pos + left
     
+    move = {'tile' : message['state']['tile'], "gate": "B", "new_position": new_pos}
+    client_resp = {
+   "response": "move",
+   "move": move,
+   "message": "Yo !"
+    }
+    client_socket.sendall(json.dumps(client_resp).encode())
+
+    #if message['state']['board'][pos]['S']== True :
+
+
 
 # Configuration
 HOST = "localhost"
@@ -63,8 +84,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     response = {"response": "pong"}
                     print(response)
                     client_socket.sendall(json.dumps(response).encode())
-                '''elif message['request'] == 'play':
-                    reponse()'''
+                elif message['request'] == 'play':
+                    play()
                 
                 #print(message['state'])
 
